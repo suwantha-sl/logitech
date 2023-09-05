@@ -20,7 +20,7 @@ class GetEvents extends Controller
         if(Auth::check()){
             $memberId = Auth::user()->id;
             if (Gate::allows('view-stored-procedure')) {
-                $results = DB::select('CALL GetEventList('.$memberId.','.$stVal.',100)');
+                $results = DB::select('CALL GetUserEventList('.$memberId.','.$stVal.',100)');
                 return response()->json($results);
             } else {
                 return response()->json(['message' => 'Unauthorized'], 403);

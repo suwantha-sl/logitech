@@ -5,7 +5,7 @@
   <div class="cotainer">
       <div class="row justify-content-center">
           <div class="col-md-8">
-              <div class="card">
+              <div id="guestLogin" class="card">
                   <div class="card-header">Login</div>
                   <div class="card-body">
   
@@ -54,7 +54,7 @@
 
       </div>      
 
-          <div class="row justify-content-center">
+          <div id="dashboardStats" class="row justify-content-center">
             <div class="col-md-3">
                 <div class="card">
                     <div class="çard-header">
@@ -87,7 +87,7 @@
             </div>
           </div>
 
-          <div class="card">
+          <div id="myEventLists" class="card">
                 <div class="card-header">Protected Content</div>
                 <div id="protected-content" class="card-body">
 
@@ -109,6 +109,7 @@
                             table.innerHTML = `<thead>
                         <tr>
                             <th>Event Description</th>                        
+                            <th>Status</th>
                             <th>Action</th>                        
                         </tr>
                     </thead>
@@ -133,7 +134,10 @@
                 localStorage.setItem('token', token);
 
                 // Hide the login form and show the protected content
-                loginForm.style.display = 'none';
+                //loginForm.style.display = 'none';
+                guestLogin.style.display = 'none';
+                dashboardStats.style.display = 'block';
+                myEventLists.style.display = 'block';
                 protectedContent.innerHTML = '<p>You are logged in!</p>';
 
                 // Attach the token to all future Axios requests
@@ -174,8 +178,8 @@
             const documentHeight = document.documentElement.scrollHeight;
             const scrollTop = window.scrollY || window.pageYOffset;
 
-            // Check if the user is close to the bottom of the page (you can adjust the threshold)
-            return scrollTop + windowHeight >= documentHeight - 100;
+            // Check if the user is close to the bottom of the page 
+            return scrollTop + windowHeight >= documentHeight - 5;
         }
 
         // Function to be called when the user scrolls to the bottom
@@ -375,19 +379,31 @@
                             myEventList.forEach(item => {
                                 const row = document.createElement('tr');
                                 var eventDesc = '';
+                                var readStatus = '';
+                                var actionTxt = '';
+
                                 if(item.source_table == 'subscribers'){
                                     eventDesc = item.name + '(Tier' + item.subscription_tier + ') subscribed to you!'; 
                                 }else if(item.source_table == 'merch_sales'){
-                                    eventDesc = item.name + '&nbsp;&nbsp;bought&nbsp;&nbsp;' + item.subscription_tier + '&nbsp;&nbsp;from you for&nbsp;&nbsp;'+ item.subscription_start + item.read_status +'&nbsp;!';
+                                    eventDesc = item.name + '&nbsp;&nbsp;bought&nbsp;&nbsp;' + item.subscription_tier + '&nbsp;&nbsp;from you for&nbsp;&nbsp;'+ item.subscription_start +'&nbsp;!';
                                 }else if(item.source_table == 'followers'){
                                     eventDesc = item.name + '&nbsp;&nbsp;followed you!';
                                 }else if(item.source_table == 'donations'){
-                                    eventDesc = item.name + '&nbsp;&nbsp;donated&nbsp;&nbsp;'+ item.subscription_tier + '&nbsp;&nbsp;' + item.subscription_start + '&nbsp;&nbsp;to you!<br>"' + item.read_status + '"';
+                                    eventDesc = item.name + '&nbsp;&nbsp;donated&nbsp;&nbsp;'+ item.subscription_tier + '&nbsp;&nbsp;' + '&nbsp;&nbsp;to you!<br>"' + item.subscription_start + '"';
                                 }else{
                                     eventDesc = '';
                                 }
+
+                                if(item.read_status == 'Y'){
+                                    readStatus = 'Read';
+                                    actionTxt = 'Toggle to Unread';
+                                }else{
+                                    readStatus = 'Unread';
+                                    actionTxt = 'Toggle to read';
+                                }
                                 row.innerHTML = `<td>${eventDesc}</td>                                             
-                                                <td>-</td>`;
+                                                <td>`+readStatus+`</td>
+                                                <td>`+actionTxt+`</td>`;
                                 tbody.appendChild(row);
                             });
                             protectedContent.appendChild(table);                            
